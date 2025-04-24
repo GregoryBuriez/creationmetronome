@@ -1,37 +1,25 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
 import streamlit as st
 import time
-from pydub import AudioSegment
-from pydub.playback import play
-import threading
 
-# Charger le son du métronome
-clique = AudioSegment.from_file("clique.wav")  # Assure-toi que tu as un fichier 'clique.wav' pour le son du métronome
+st.set_page_config(page_title="Métronome", layout="centered")
 
-# Fonction du métronome
-def metronome(tempo):
-    interval = 60 / tempo  # Calcul du temps entre chaque battement en secondes
-    while True:
-        play(clique)  # Joue le son du métronome
-        time.sleep(interval)  # Pause entre les battements
+st.title("🕒 Métronome")
 
-# Fonction principale Streamlit
-def main():
-    st.title("Métronome")
+tempo = st.slider("🎵 Tempo (BPM)", 40, 220, 120)
+start = st.button("Démarrer le Métronome")
 
-    # Choisir le tempo
-    tempo = st.slider("Choisis le tempo (BPM)", min_value=40, max_value=220, value=120, step=1)
+# Lecture du fichier audio
+with open("clique.wav", "rb") as f:
+    audio = f.read()
 
-    # Bouton pour démarrer le métronome
-    if st.button("Démarrer le Métronome"):
-        st.write(f"Métronome à {tempo} BPM")
-        threading.Thread(target=metronome, args=(tempo,)).start()
+# Métronome simple : lecture d'un nombre fixe de battements
+if start:
+    st.success(f"Démarrage du métronome à {tempo} BPM")
+    interval = 60.0 / tempo
+    placeholder = st.empty()
 
-if __name__ == "__main__":
-    main()
+    for i in range(20):  # Joue 20 battements
+        placeholder.audio(audio, format="audio/wav")
+        time.sleep(interval)
+
 
